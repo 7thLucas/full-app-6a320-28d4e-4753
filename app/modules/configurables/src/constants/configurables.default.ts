@@ -12,35 +12,40 @@ export type TBrandColor = {
   accent: string;
 };
 
+export type TStatusColors = {
+  hot: string;
+  warm: string;
+  cold: string;
+};
+
 export type TDefaultConfigurableData = {
   appName: string;
   logoUrl: string;
   brandColor: TBrandColor;
-  // Mirror new schema fields here. Example:
-  //   maxItemsPerPage?: number;
-  //   enableNotifications?: boolean;
-  //   featuredCategories?: string[];
+  tagline?: string;
+  followUpDaysThreshold?: number;
+  verticals?: string[];
+  statusColors?: TStatusColors;
+  emptyStateMessage?: string;
+  welcomeMessage?: string;
 };
 
 export const defaultConfigurablesData: TDefaultConfigurableData = {
-  appName: "FILL_APP_NAME_HERE",
+  appName: "The Curated Co",
   logoUrl: "FILL_LOGO_URL_HERE",
   brandColor: {
-    primary: "FILL_PRIMARY_COLOR_HERE",
-    secondary: "FILL_SECONDARY_COLOR_HERE",
-    accent: "FILL_ACCENT_COLOR_HERE",
+    primary: "#1A1A1A",
+    secondary: "#C9A96E",
+    accent: "#FAFAF8",
   },
-  // ─────────────────────────────────────────────────────────────────────
-  // Add new field defaults here. See RULES.md §5 for per-type shape.
-  // Required branding fields → use the FILL_X_HERE placeholder pattern.
-  // Optional/typed defaults → real value with a "// fill it here" comment:
-  //
-  //   maxItemsPerPage: 12,                     // fill it here
-  //   enableNotifications: true,               // fill it here
-  //   featuredCategories: [],                  // fill it here
-  //   defaultLanguage: "en",                   // must match enum options
-  //   launchDate: "2025-01-01T00:00:00.000Z",  // ISO-8601
-  //   heroImage: "",                           // resolved URL after upload
-  //   galleryImages: [],                       // array of resolved URLs
-  // ─────────────────────────────────────────────────────────────────────
+  tagline: "Your outreach, organized.",
+  followUpDaysThreshold: 7,
+  verticals: ["Interior Designers", "Restaurants", "Fashion Boutiques"],
+  statusColors: {
+    hot: "#D94F3D",
+    warm: "#E8944A",
+    cold: "#9BAFB8",
+  },
+  emptyStateMessage: "No leads yet. Add your first one.",
+  welcomeMessage: "Here's who to reach out to next.",
 };

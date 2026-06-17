@@ -19,29 +19,40 @@ interface DiscoveredSeed {
 const seedFilePattern = /\.seed\.(ts|tsx|js|mjs|cjs)$/;
 
 async function discoverSeedFiles(): Promise<string[]> {
-  const modulesPath = path.join(process.cwd(), "app", "modules");
-  const moduleEntries = await readdir(modulesPath, { withFileTypes: true }).catch((error) => {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      return [];
-    }
+  const appPath = path.join(process.cwd(), "app");
+  const seedFilesSet = new Set<string>();
 
+  // Scan app/modules/* (existing convention)
+  const modulesPath = path.join(appPath, "modules");
+  const moduleEntries = await readdir(modulesPath, { withFileTypes: true }).catch((error) => {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
     throw error;
   });
 
-  const seedFilesSet = new Set<string>();
-
   for (const entry of moduleEntries) {
     if (!entry.isDirectory()) continue;
-
     const modulePath = path.join(modulesPath, entry.name);
     const scanPaths = [modulePath, path.join(modulePath, "src", "seeds")];
-
     for (const scanPath of scanPaths) {
       const files = await readdir(scanPath, { withFileTypes: true }).catch(() => []);
       for (const file of files) {
         if (file.isFile() && seedFilePattern.test(file.name)) {
           seedFilesSet.add(path.join(scanPath, file.name));
         }
+      }
+    }
+  }
+
+  // Scan app/leads/src/seeds (app-level modules outside app/modules/)
+  const extraScanRoots = [
+    path.join(appPath, "leads", "src", "seeds"),
+  ];
+
+  for (const scanPath of extraScanRoots) {
+    const files = await readdir(scanPath, { withFileTypes: true }).catch(() => []);
+    for (const file of files) {
+      if (file.isFile() && seedFilePattern.test(file.name)) {
+        seedFilesSet.add(path.join(scanPath, file.name));
       }
     }
   }
@@ -102,9 +113,9 @@ export async function runSeeds(): Promise<void> {
       await seed.run();
     }
 
-    logger.info("✅ All seed operations completed successfully");
+    logger.info("All seed operations completed successfully");
   } catch (error) {
-    logger.error("❌ Seed operations failed:", error);
-    logger.warn("⚠️ Server will continue despite seeding failure");
+    logger.error("Seed operations failed:", error);
+    logger.warn("Server will continue despite seeding failure");
   }
 }
